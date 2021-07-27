@@ -3,17 +3,17 @@ body {
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 html {
-  background-color: #F8F9FA;
+  background-color: #f8f9fa;
 }
 
 #root {
-    background-color: #F8F9FA !important;
+  background-color: #f8f9fa !important;
 }
 
-.container {
+.container-test {
   margin: 70px auto;
   overflow: hidden;
   width: 80%;
   text-align: center;
-  background-color: #F8F9FA;
+  background: linear-gradient(81.62deg, #313860 2.25%, #151928 79.87%);
 }

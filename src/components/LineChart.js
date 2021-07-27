@@ -1,15 +1,30 @@
 import React from "react";
 import Chart from "react-apexcharts";
-import { useState } from "react";
-import { Button } from "react-bootstrap";
+import { useState, useEffect } from "react";
 
-export default function LineChart() {
-  const [options] = useState({
+export default function LineChart(props) {
+  const [options, setOptions] = useState({
     chart: {
       background: "#ffffff",
       foreColor: "#333",
       toolbar: {
         show: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+      animations: {
+        enabled: true,
+        easing: "easeinout",
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150,
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350,
+        },
       },
     },
     legend: {
@@ -63,6 +78,18 @@ export default function LineChart() {
           cssClass: "apexcharts-xaxis-label",
         },
       },
+      title: {
+        text: "in 2021",
+        offsetX: "0rem",
+        offsetY: "0rem",
+        style: {
+          color: "#A0AEC0",
+          fontSize: "12px",
+          fontFamily: "Helvetica, Arial, sans-serif",
+          fontWeight: 450,
+          cssClass: "apexcharts-yaxis-title",
+        },
+      },
     },
     yaxis: {
       labels: {
@@ -86,7 +113,6 @@ export default function LineChart() {
         opacityFrom: 0.8,
         opacityTo: 0,
         stops: [],
-        colorStops: [],
       },
     },
     stroke: {
@@ -94,82 +120,78 @@ export default function LineChart() {
       width: 2,
     },
     title: {
-      text: "Sales overview",
+      text: undefined, // Sales overview
       align: "left",
       margin: 30,
       offsetX: 10,
-      offsetY: -5,
+      offsetY: 20,
       style: {
-        fontSize: "18px",
+        fontSize: "14px",
         color: "#2D3748",
       },
     },
-    // events: {
-    //   click: (event, chartContext, confi) => {
-    //     console.log(11);
-    //     const newNumber = series[0].data[series[0].data.length - 1];
-    //     const originalNumber = series[0].data[0];
-    //     const Increase = ((newNumber - originalNumber) / originalNumber) * 100;
-    //     Math.floor(Math.abs(Increase));
-    //     // Increase > 0 ? "green":"red";
-    //     console.log(Math.floor(Math.abs(Increase)));
-    //   },
-    // },
+    subtitle: {
+      text: "in 2021",
+      align: "left",
+      margin: 30,
+      offsetX: 106,
+      offsetY: 20,
+      floating: false,
+      style: {
+        fontSize: "14px",
+        fontWeight: "500",
+        fontFamily: undefined,
+        color: "#CBD5E0",
+      },
+    },
   });
 
-  const [series, setSeries] = useState([
-    {
-      type: "area",
-      name: "Mobile apps",
-      data: [200, 55, 41, 171, 125, 34, 25, 141, 107, 150, 22, 400],
-    },
-    {
-      type: "area",
-      name: "Websites",
-      data: [33, 11, 21, 117, 25, 133, 121, 211, 147, 25, 201, 203],
-    },
-  ]);
+  const [series, setSeries] = useState(props.series);
+
+  useEffect(() => {
+    setSeries(props.series);
+  }, [props.series]);
+
+  useEffect(() => {
+    const inc = calculateIncrease();
+    let col,
+      txt,
+      sInc = Math.abs(inc).toString(),
+      titleDis;
+    if (inc === 0) {
+      col = "#A0AEC0";
+      txt = txt = "(+" + sInc + "%) more";
+    } else {
+      inc > 0 ? (col = "#48BB78") : (col = "#E53E3E");
+      inc > 0
+        ? (txt = "(+" + sInc + "%) more")
+        : (txt = "(-" + sInc + "%) less");
+    }
+    sInc.lenght > 3 ? (titleDis = 150) : (titleDis = 120);
+    console.log(sInc.length);
+    setOptions({
+      ...options,
+      title: {
+        ...options.title,
+        text: txt,
+        style: {
+          ...options.title.style,
+          color: col,
+        },
+      },
+      subtitle: {
+        ...options.subtitle,
+        offsetX: titleDis,
+      },
+    });
+  }, [series]);
 
   const calculateIncrease = () => {
     const newNumber = series[0].data[series[0].data.length - 1];
     const originalNumber = series[0].data[0];
     const Increase = ((newNumber - originalNumber) / originalNumber) * 100;
-    Math.floor(Math.abs(Increase));
-    // if (increase == 0)
-    //   "gray"
-    //else
-    //  Increase > 0 ? "green":"red";
-    console.log(Increase.toString() + "%");
-    // console.log(Math.floor(Math.abs(Increase)));
-  };
-  const GenerateData = () => {
-    const newSeries = [];
-    series.map((s) => {
-      const data = s.data.map(() => {
-        return Math.round(Math.random() * (180 - Math.exp(Math.random())));
-      });
-      newSeries.push({ data, name: s.name });
-    });
-    setSeries(newSeries);
+    return Math.floor(Increase);
   };
 
-  return (
-    <React.Fragment>
-      <Chart
-        options={options}
-        series={series}
-        // type="line"
-        height="450"
-        width="100%"
-      />
-      <Button
-        onClick={GenerateData}
-        variant="secondary"
-        style={{ margin: "5px" }}
-      >
-        Random
-      </Button>
-      <Button onClick={calculateIncrease}>click</Button>
-    </React.Fragment>
-  );
+  return <Chart options={options} series={series} width="100%" height="450" />;
 }

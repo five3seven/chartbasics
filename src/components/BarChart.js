@@ -1,84 +1,102 @@
 import React from "react";
 import Chart from "react-apexcharts";
-import { useState } from "react";
-import { Button } from "react-bootstrap";
+import { useState, useEffect } from "react";
 
-export default function BarChart() {
-  const [options, setOptions] = useState({
+export default function BarChart(props) {
+  const [options] = useState({
     chart: {
-      background: "#f4f4f4",
+      background: "transparent",
       foreColor: "#333",
+      toolbar: {
+        show: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    grid: {
+      show: false,
     },
     xaxis: {
-      categories: ["A", "B", "C", "D", "E"],
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
+      labels: {
+        show: false,
+      },
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: ["#FFFFFF"],
+          fontSize: "12px",
+          fontFamily: "Helvetica, Arial, sans-serif",
+          fontWeight: 500,
+          cssClass: "apexcharts-yaxis-label",
+        },
+      },
     },
     plotOptions: {
       bar: {
         horizontal: false,
+        borderRadius: 7,
+        columnWidth: "25%",
+        barHeight: "70%",
       },
     },
     fill: {
-      colors: ["#f44336"],
+      colors: ["#FFFFFF"],
     },
-    dataLables: {
+    dataLabels: {
       enabled: false,
     },
     title: {
-      text: "Numbers",
-      align: "center",
-      margin: 20,
-      offsetY: 20,
-      style: {
-        fontSize: "25px",
+      text: undefined,
+    },
+    states: {
+      active: {
+        allowMultipleDataPointsSelection: false,
+        filter: {
+          type: "none",
+          value: 0,
+        },
       },
     },
   });
-  const [series, setSeries] = useState([
-    {
-      name: "numbers",
-      data: [44, 55, 41, 17, 15],
-    },
-  ]);
 
-  function ChartOrientation() {
-    setOptions({
-      ...options,
-      plotOptions: {
-        ...options.plotOptions,
-        bar: {
-          ...options.plotOptions.bar,
-          horizontal: !options.plotOptions.bar.horizontal,
-        },
-      },
-    });
-  }
+  const [series, setSeries] = useState(props.series);
 
-  function GenerateData() {
-    const newSeries = [];
-    series.map((s) => {
-      const data = s.data.map(() => {
-        return Math.round(Math.random() * (180 - Math.exp(Math.random())));
-      });
-      newSeries.push({ data, name: s.name });
-    });
-    setSeries(newSeries);
-  }
+  useEffect(() => {
+    setSeries(props.series);
+  }, [props.series]);
 
   return (
-    <React.Fragment>
       <Chart
         options={options}
         series={series}
         type="bar"
-        height="450"
-        width="100%"
+        height="225"
+        width="620"
       />
-      <Button onClick={ChartOrientation} variant="primary" style={{marginRight: "5px"}}>
-        Switch Orientation
-      </Button>
-      <Button onClick={GenerateData} variant="secondary" style={{marginLeft: "5px"}}>
-        Random
-      </Button>
-    </React.Fragment>
   );
 }
